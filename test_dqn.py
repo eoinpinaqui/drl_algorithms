@@ -6,7 +6,6 @@ from models.dqn.agent import Agent
 import numpy as np
 import json
 
-print('Here')
 
 env = SinglePlayerGame()
 agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=0.1, epsilon_end=0.1, epsilon_dec=1e-4, batch_size=64, linear=True)
