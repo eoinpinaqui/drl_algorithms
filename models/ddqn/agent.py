@@ -1,5 +1,5 @@
 # Local imports
-from memory import ReplayBuffer
+from .memory import ReplayBuffer
 
 # Library imports
 import tensorflow.keras as keras
@@ -30,7 +30,7 @@ def build_linear_dqn(lr, n_actions):
 
 class Agent:
     def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000,
-                 fname='./models/dqn/saved/agent.h5', linear=False, replace_target=1000):
+                 fname='./models/ddqn/saved/agent.h5', linear=False, replace_target=1000):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon
@@ -94,4 +94,3 @@ class Agent:
 
     def load_model(self):
         self.q_eval = keras.models.load_model(self.model_file)
-        self.update_network_parameters()
