@@ -12,7 +12,7 @@ scores = metrics_file['scores']
 
 plt.plot(metrics_file['steps'], metrics_file['scores'], label='Scores')
 plt.plot(metrics_file['steps'], metrics_file['avg_scores'], label='Average Score (over previous 50 episodes)')
-plt.title('Reward over time')
+plt.title('Reward over time (Random Agent)')
 plt.xlabel('Total Steps')
 plt.ylabel('Score')
 plt.legend()
@@ -20,7 +20,7 @@ plt.show()
 
 plt.plot(range(len(metrics_file['scores'])), metrics_file['scores'], label='Scores')
 plt.plot(range(len(metrics_file['scores'])), metrics_file['avg_scores'], label='Average Score (over previous 50 episodes)')
-plt.title('Reward over time')
+plt.title('Reward over time (Random Agent)')
 plt.xlabel('Episode')
 plt.ylabel('Score')
 plt.legend()

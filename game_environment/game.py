@@ -95,7 +95,7 @@ class SinglePlayerGame(gym.Env):
         assert mode in ['human', 'rgb_array'], 'Invalid mode, must be either "human" or "rgb_array"'
         if mode == "human":
             cv2.imshow("Game", self.canvas)
-            cv2.waitKey(100)
+            cv2.waitKey(10)
         elif mode == "rgb_array":
             return self.canvas
 
