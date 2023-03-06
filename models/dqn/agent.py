@@ -1,5 +1,5 @@
 # Local imports
-from memory import ReplayBuffer
+from .memory import ReplayBuffer
 
 # Library imports
 import tensorflow.keras as keras
