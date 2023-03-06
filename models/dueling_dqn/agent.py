@@ -1,5 +1,5 @@
 # Local imports
-from .memory import ReplayBuffer
+from memory import ReplayBuffer
 
 # Library imports
 import tensorflow as tf
@@ -77,10 +77,10 @@ class Agent:
         self.batch_size = batch_size
         self.model_file = fname
         self.memory = ReplayBuffer(mem_size)
+
         self.q_eval = LinearDuelingNetwork(n_actions) if linear else ConvDuelingNetwork(n_actions)
         self.q_eval.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss='mean_squared_error')
-        self.q_next = LinearDuelingNetwork(n_actions) if linear else ConvDuelingNetwork(n_actions)
-        self.q_next.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss='mean_squared_error')
+
         self.replace_target = replace_target
         self.replace_counter = 0
 
@@ -92,7 +92,7 @@ class Agent:
             action = np.random.randint(self.n_actions)
         else:
             state = np.array([observation])
-            actions = self.q_eval.advantage(state)
+            actions = self.q_eval(state)
             action = np.argmax(actions)
 
         return action
@@ -103,28 +103,19 @@ class Agent:
 
         states, actions, rewards, next_states, dones = self.memory.sample_buffer(self.batch_size)
 
-        q_pred = self.q_eval(states)
-        q_next = tf.math.reduce_max(self.q_next(next_states), axis=1)
+        q_pred = self.q_eval(states).numpy()
+        q_next = self.q_eval(next_states).numpy()
 
         q_target = np.copy(q_pred)
         batch_index = np.arange(self.batch_size, dtype=np.int32)
 
-        q_target[batch_index, actions] = rewards + self.gamma * q_next * dones
+        q_target[batch_index, actions] = rewards + self.gamma * np.max(q_next, axis=1) * dones
 
         loss = self.q_eval.train_on_batch(states, q_target)
 
         self.epsilon = self.epsilon - self.eps_dec if self.epsilon > self.eps_min else self.eps_min
 
-        self.replace_counter += 1
-        if self.replace_counter % self.replace_target == 0:
-            self.replace_counter = 0
-            self.update_network_parameters()
-
         return loss
-
-    def update_network_parameters(self):
-        print('Copying weights from q_eval to q_next...')
-        self.q_next.set_weights(self.q_eval.get_weights())
 
     def save_model(self):
         self.q_eval.save_weights(self.model_file)

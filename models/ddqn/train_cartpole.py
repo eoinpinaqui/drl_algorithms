@@ -4,6 +4,13 @@ from agent import Agent
 # Library imports
 import gym
 import numpy as np
+import tensorflow as tf
+import random
+
+# Set the seeds
+np.random.seed(42)
+tf.random.set_seed(42)
+random.seed(42)
 
 env = gym.make('CartPole-v0')
 agent = Agent(lr=0.001, gamma=0.95, n_actions=2, epsilon=1.0, batch_size=64, epsilon_end=0.0, replace_target=100, linear=True)

@@ -6,31 +6,42 @@ import tensorflow.keras as keras
 import numpy as np
 
 
-def build_conv_dqn(lr, n_actions):
-    model = keras.Sequential([
-        keras.layers.Conv2D(32, 8, strides=(4, 4), padding='same', activation='relu'),
-        keras.layers.Conv2D(64, 4, strides=(2, 2), padding='same', activation='relu'),
-        keras.layers.Conv2D(64, 3, strides=(1, 1), padding='same', activation='relu'),
-        keras.layers.Flatten(),
-        keras.layers.Dense(512, activation='relu'),
-        keras.layers.Dense(n_actions, activation='softmax')
-    ])
-    model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss='mean_squared_error')
-    return model
+class LinearNetwork(keras.Model):
+    def __init__(self, n_actions):
+        super(LinearNetwork, self).__init__()
+        self.dense1 = keras.layers.Dense(256, activation='relu')
+        self.dense2 = keras.layers.Dense(256, activation='relu')
+        self.dense3 = keras.layers.Dense(n_actions, activation=None)
+
+    def call(self, state):
+        x = self.dense1(state)
+        x = self.dense2(x)
+        q = self.dense3(x)
+        return q
 
 
-def build_linear_dqn(lr, n_actions):
-    model = keras.Sequential([
-        keras.layers.Dense(256, activation='relu'),
-        keras.layers.Dense(256, activation='relu'),
-        keras.layers.Dense(n_actions, activation=None)])
-    model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss='mean_squared_error')
-    return model
+class ConvNetwork(keras.Model):
+    def __init__(self):
+        super(ConvNetwork, self).__init__()
+        self.conv1 = keras.layers.Conv2D(32, 8, strides=(4, 4), padding='same', activation='relu')
+        self.conv2 = keras.layers.Conv2D(64, 4, strides=(2, 2), padding='same', activation='relu')
+        self.conv3 = keras.layers.Conv2D(64, 3, strides=(1, 1), padding='same', activation='relu')
+        self.flatten = keras.layers.Flatten()
+        self.dense1 = keras.layers.Dense(512, activation='relu')
+        self.dense2 = keras.layers.Dense(n_actions, activation=None)
+
+    def call(self, state):
+        x = self.conv1(state)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.flatten(x)
+        x = self.dense1(x)
+        q = self.dense2(x)
+        return q
 
 
 class Agent:
-    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000, fname='./models/dqn/saved/agent.h5',
-                 linear=False):
+    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000, fname='./models/dqn/saved/weights/', linear=False):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon
@@ -39,7 +50,9 @@ class Agent:
         self.batch_size = batch_size
         self.model_file = fname
         self.memory = ReplayBuffer(mem_size)
-        self.q_eval = build_linear_dqn(lr, n_actions) if linear else build_conv_dqn(lr, n_actions)
+
+        self.q_eval = LinearNetwork(n_actions) if linear else ConvNetwork(n_actions)
+        self.q_eval.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss='mean_squared_error')
 
     def store_transition(self, state, action, reward, new_state, done):
         self.memory.store_transition(state, action, reward, new_state, done)
@@ -49,7 +62,7 @@ class Agent:
             action = np.random.randint(self.n_actions)
         else:
             state = np.array([observation])
-            actions = self.q_eval.predict(state, verbose=0)
+            actions = self.q_eval(state)
             action = np.argmax(actions)
 
         return action
@@ -60,10 +73,10 @@ class Agent:
 
         states, actions, rewards, next_states, dones = self.memory.sample_buffer(self.batch_size)
 
-        q_eval = self.q_eval.predict(states, verbose=0)
-        q_next = self.q_eval.predict(next_states, verbose=0)
+        q_pred = self.q_eval(states).numpy()
+        q_next = self.q_eval(next_states).numpy()
 
-        q_target = np.copy(q_eval)
+        q_target = np.copy(q_pred)
         batch_index = np.arange(self.batch_size, dtype=np.int32)
 
         q_target[batch_index, actions] = rewards + self.gamma * np.max(q_next, axis=1) * dones
