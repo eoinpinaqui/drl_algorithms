@@ -11,7 +11,9 @@ env = SinglePlayerGame()
 agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=0.1, epsilon_end=0.1, epsilon_dec=1e-4, batch_size=64, linear=True)
 agent.load_model()
 
-for i in range(100):
+scores = []
+
+for i in range(50):
     observation = env.reset()
     done = False
     score = 0
@@ -20,6 +22,8 @@ for i in range(100):
         next_state, reward, done, _ = env.step(action)
         score += reward
         observation = next_state
-        env.render()
+        # env.render()
+    scores.append(score)
     print(f'Episode {i}, Score: {score}')
 
+print(f'Average: {np.mean(scores)}')
