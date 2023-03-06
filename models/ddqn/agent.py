@@ -41,11 +41,10 @@ class ConvNetwork(keras.Model):
 
 
 class Agent:
-    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000, fname='./models/ddqn/saved/weights', linear=False, replace_target=1000):
+    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_end=0.01, mem_size=1000000, fname='./models/ddqn/saved/weights', linear=False, replace_target=1000):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon
-        self.eps_dec = epsilon_dec
         self.eps_min = epsilon_end
         self.batch_size = batch_size
         self.model_file = fname
@@ -91,8 +90,6 @@ class Agent:
 
         loss = self.q_eval.train_on_batch(states, q_target)
 
-        self.epsilon = self.epsilon - self.eps_dec if self.epsilon > self.eps_min else self.eps_min
-
         self.replace_counter += 1
         if self.replace_counter % self.replace_target == 0:
             self.replace_counter = 0
@@ -102,6 +99,9 @@ class Agent:
 
     def update_network_parameters(self):
         self.q_next.set_weights(self.q_eval.get_weights())
+
+    def decrease_epsilon(self, delta):
+        self.epsilon = self.epsilon - delta if self.epsilon > self.eps_min else self.eps_min
 
     def save_model(self):
         self.q_eval.save_weights(self.model_file)

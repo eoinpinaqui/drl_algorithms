@@ -7,9 +7,10 @@ import numpy as np
 import json
 
 env = SinglePlayerGame()
-agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=1.0, epsilon_end=0.1, epsilon_dec=25e-7, batch_size=64, linear=True)
+agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=1.0, epsilon_end=0.1, batch_size=64, linear=True)
 
 n_training_episodes = 20000
+epsilon_delta = 0.9 / (n_training_episodes / 2)
 
 best_score = -1000
 
@@ -41,6 +42,10 @@ while n_episodes < n_training_episodes:
         if loss is not None:
             losses.append(loss)
 
+    # Decrease epsilon
+    agent.decrease_epsilon(epsilon_delta)
+
+    # Record metrics
     n_episodes += 1
     score_history.append(score)
     step_history.append(n_steps)

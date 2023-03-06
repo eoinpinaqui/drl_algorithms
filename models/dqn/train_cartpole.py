@@ -17,6 +17,7 @@ env = gym.make('CartPole-v0')
 agent = Agent(lr=0.001, gamma=0.95, n_actions=2, epsilon=1.0, batch_size=64, epsilon_end=0.0, linear=True)
 
 n_games = 100
+epsilon_delta = 1.0 / (n_games / 2)
 
 best_score = env.reward_range[0]
 score_history = []
@@ -38,6 +39,7 @@ for i in range(n_games):
         observation = next_state
         agent.learn()
 
+    agent.decrease_epsilon(epsilon_delta)
     score_history.append(score)
     avg_score = np.mean(score_history[-10:])
 
