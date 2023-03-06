@@ -3,8 +3,7 @@ from game_environment.game import SinglePlayerGame
 from models.dueling_dqn.agent import Agent
 
 env = SinglePlayerGame()
-agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=0.0, epsilon_end=0.0, epsilon_dec=1e-4,
-              batch_size=64, linear=True)
+agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=0.1, epsilon_end=0.1, batch_size=64, linear=True)
 agent.load_model()
 
 for i in range(100):
