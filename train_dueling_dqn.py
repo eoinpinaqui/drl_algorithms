@@ -9,7 +9,7 @@ import json
 env = SinglePlayerGame()
 agent = Agent(lr=0.001, gamma=0.95, n_actions=env.action_space.n, epsilon=1.0, epsilon_end=0.1, epsilon_dec=25e-7, batch_size=64, linear=True)
 
-n_total_steps = 10000000
+n_episodes = 20000
 
 best_score = -1000
 
@@ -24,7 +24,7 @@ n_steps = 0
 
 last_write = -1000
 
-while n_steps < n_total_steps:
+while n_episodes < n_training_episodes:
     observation = env.reset()
     done = False
     score = 0
