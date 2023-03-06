@@ -88,7 +88,7 @@ class Agent:
         return loss
 
     def save_model(self):
-        self.q_eval.save(self.model_file)
+        self.q_eval.save_weights(self.model_file)
 
     def load_model(self):
-        self.q_eval = keras.models.load_model(self.model_file)
+        self.q_eval.load_weights(self.model_file)

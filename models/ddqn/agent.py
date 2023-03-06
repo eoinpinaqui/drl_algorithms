@@ -41,8 +41,7 @@ class ConvNetwork(keras.Model):
 
 
 class Agent:
-    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000,
-                 fname='./models/ddqn/saved/agent.h5', linear=False, replace_target=1000):
+    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000, fname='./models/ddqn/saved/weights', linear=False, replace_target=1000):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon
@@ -105,7 +104,7 @@ class Agent:
         self.q_next.set_weights(self.q_eval.get_weights())
 
     def save_model(self):
-        self.q_eval.save(self.model_file)
+        self.q_eval.save_weights(self.model_file)
 
     def load_model(self):
-        self.q_eval = keras.models.load_model(self.model_file)
+        self.q_eval.load_weights(self.model_file)

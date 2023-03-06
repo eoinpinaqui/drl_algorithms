@@ -67,8 +67,7 @@ class ConvDuelingNetwork(keras.Model):
 
 
 class Agent:
-    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000,
-                 fname='./models/dueling_dqn/saved/weights/', linear=False, replace_target=1000):
+    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_dec=1e-3, epsilon_end=0.01, mem_size=1000000, fname='./models/dueling_dqn/saved/weights/', linear=False, replace_target=1000):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon
