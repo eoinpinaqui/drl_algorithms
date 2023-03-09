@@ -21,7 +21,7 @@ class LinearNetwork(keras.Model):
 
 
 class ConvNetwork(keras.Model):
-    def __init__(self):
+    def __init__(self, n_actions):
         super(ConvNetwork, self).__init__()
         self.conv1 = keras.layers.Conv2D(32, 8, strides=(4, 4), padding='same', activation='relu')
         self.conv2 = keras.layers.Conv2D(64, 4, strides=(2, 2), padding='same', activation='relu')

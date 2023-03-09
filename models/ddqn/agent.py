@@ -21,7 +21,7 @@ class LinearNetwork(keras.Model):
 
 
 class ConvNetwork(keras.Model):
-    def __init__(self):
+    def __init__(self, n_actions):
         super(ConvNetwork, self).__init__()
         self.conv1 = keras.layers.Conv2D(32, 8, strides=(4, 4), padding='same', activation='relu')
         self.conv2 = keras.layers.Conv2D(64, 4, strides=(2, 2), padding='same', activation='relu')
@@ -41,7 +41,7 @@ class ConvNetwork(keras.Model):
 
 
 class Agent:
-    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_end=0.01, mem_size=1000000, fname='./models/ddqn/saved/weights', linear=False, replace_target=1000):
+    def __init__(self, lr, gamma, n_actions, epsilon, batch_size, epsilon_end=0.01, mem_size=100000, fname='./models/ddqn/saved/weights', linear=False, replace_target=1000):
         self.n_actions = n_actions
         self.gamma = gamma
         self.epsilon = epsilon

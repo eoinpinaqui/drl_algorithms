@@ -35,8 +35,8 @@ plt.show()
 
 
 # Figure out what epsilon looks like
-epsilon_delta = 25e-7
-epsilons = [1 - epsilon_delta * steps for steps in metrics_file['steps']]
+epsilon_delta = 0.9 / 10000
+epsilons = [1 - epsilon_delta * i for i, steps in enumerate(metrics_file['steps'])]
 plt.plot(metrics_file['steps'], epsilons, label='Epsilon')
 plt.title('Epsilon over time')
 plt.xlabel('Training step')
